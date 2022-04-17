@@ -11,6 +11,7 @@ app.use(cors(corsConf));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+//sync databases
 db.sequelize.sync({ force: true })
     .then(() => {
         console.log('Sync');
