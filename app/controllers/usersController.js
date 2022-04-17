@@ -1,6 +1,6 @@
 const db = require('../models');
 const { createHash } = require('crypto');
-const users = db.users;
+const Users = db.users;
 const Op = db.Sequelize.Op;
 
 const genHash = (pass) => {
@@ -8,6 +8,7 @@ const genHash = (pass) => {
 }
 
 exports.create = (req, res) => {
+    console.log(req.body)
     if(!req.body.email) {
         res.status(400).send({
             message: 'Email can not be empty'
@@ -18,7 +19,7 @@ exports.create = (req, res) => {
         email: req.body.email,
         password: genHash(req.body.password)
     }
-    user.create(user).then(data => {
+    Users.create(user).then(data => {
         res.send(data);
     })
     .catch(e => {
@@ -29,7 +30,7 @@ exports.create = (req, res) => {
 }
 
 exports.findAll = (req, res) => {
-    const email = req.body.email;
+    const email = req.query.email;
     var users= email ? { email: { [Op.like]: `%${email}%` } } : null;
     Users.findAll({ where: users })
       .then(data => {
