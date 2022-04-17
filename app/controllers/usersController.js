@@ -7,45 +7,47 @@ const genHash = (pass) => {
     return createHash('sha256').update(pass).digest('hex');
 }
 
-exports.create = (req, res) => {
-    if(!req.body.email) {
-        res.status(400).send({
-            message: 'Email can not be empty'
-        });
-        return;
-    }
-    const user = {
-        email: req.body.email,
-        password: genHash(req.body.password)
-    }
-    Users.create(user).then(data => {
+exports.create = async (req, res) => {
+    try {
+        if(!req.body.email) {
+            res.status(400).send({
+                message: 'Email can not be empty'
+            });
+            return;
+        }
+        const user = {
+            email: req.body.email,
+            password: genHash(req.body.password)
+        }
+        const data = await Users.create(user);
         res.send(data);
-    })
-    .catch(e => {
+    }
+    catch(e) {
         res.status(500).send({
             message: e.message
         });
-    });
+    }
 }
 
-exports.findAll = (req, res) => {
-    const email = req.query.email;
-    var users= email ? { email: { [Op.like]: `%${email}%` } } : null;
-    Users.findAll({ where: users })
-      .then(data => {
+exports.findAll = async (req, res) => {
+    try {
+        const email = req.query.email;
+        var users= email ? { email: { [Op.like]: `%${email}%` } } : null;
+        const data = await Users.findAll({ where: users });
         res.send(data);
-      })
-      .catch(err => {
+    }
+    catch(e) {
         res.status(500).send({
           message:
-            err.message
+            e.message
         });
-      });
+    };
 }
 
-exports.findOne = (req, res) => {
-    const id = req.params.id;
-    Users.findByPk(id).then(data => {
+exports.findOne = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const data = await Users.findByPk(id);
         if(data) {
             res.send(data);
         }
@@ -54,34 +56,45 @@ exports.findOne = (req, res) => {
                 message: 'Can`t find user'
             })
         }
-    })
-    .catch(e => {
-        res.status(500).send({
-            message: `${e}`
-        });
-    });
-}
-
-exports.update = (req, res) => {
-    const id = req.params.id;
-    if(req.body.password) {
-        req.body.password = genHash(req.body.password);
     }
-    Users.update(req.body, {
-        where: { id: id }
-    })
-    .then(data => {
-        res.send(`${data} id success changed`);
-    })
-    .catch(e => {
+    catch(e) {
         res.status(500).send({
             message: `${e}`
         });
-    });
+    }
 }
 
-exports.delete = (req, res) => {
+exports.update = async (req, res) => {
+    try {
+        const id = req.params.id;
+        if(req.body.password) {
+            req.body.password = genHash(req.body.password);
+        }
+        const data = await Users.update(req.body, {
+            where: { id: id }
+        })
+        res.send(`${data} id success changed`);
+    }
+    catch(e) {
+        res.status(500).send({
+            message: `${e}`
+        });
+    }
+}
 
+exports.delete = async (req, res) => {
+    try{
+        const id = req.params.id;
+        const data = await Users.destroy({
+            where: { id: id }
+        });
+        res.send(`${data} el delete`);
+    }
+    catch(e) {
+        res.status(500).send({
+            message: `can\`t delete ${id}`
+        });
+    }
 }
 
 exports.deleteAll = (req, res) => {
