@@ -13,14 +13,15 @@ app.use(bodyParser.json());
 require('./app/routes/users.routes')(app);
 
 //sync databases
-db.sequelize.sync()
-    .then(() => {
-        console.log('Sync');
-    })
-    .catch(err => {
-        console.error(err);
-    });;
-
+(async() => {
+    try{
+       const sync = await db.sequelize.sync()
+       console.log('Sync');
+    }
+    catch(e) {
+        console.error(e);
+    }
+})();
 
 app.listen(port, () => {
     console.log(`Blest-off on http://localhost:${port}`);

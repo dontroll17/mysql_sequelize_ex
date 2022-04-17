@@ -44,7 +44,7 @@ exports.findAll = (req, res) => {
 }
 
 exports.findOne = (req, res) => {
-    const id = req.body.id;
+    const id = req.params.id;
     Users.findByPk(id).then(data => {
         if(data) {
             res.send(data);
@@ -64,6 +64,9 @@ exports.findOne = (req, res) => {
 
 exports.update = (req, res) => {
     const id = req.params.id;
+    if(req.body.password) {
+        req.body.password = genHash(req.body.password);
+    }
     Users.update(req.body, {
         where: { id: id }
     })
