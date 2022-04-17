@@ -97,6 +97,15 @@ exports.delete = async (req, res) => {
     }
 }
 
-exports.deleteAll = (req, res) => {
-
+exports.deleteAll = async (req, res) => {
+    try {
+        const data = await Users.destroy({
+            where: {},
+            truncate: false
+        });
+        res.send({ message: `${data} was delete`});
+    }
+    catch(e) {
+        res.status(500).send(e);
+    }
 }
