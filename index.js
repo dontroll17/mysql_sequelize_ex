@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 require('./app/routes/users.routes')(app);
 
 //sync databases
-db.sequelize.sync({ force: true })
+db.sequelize.sync()
     .then(() => {
         console.log('Sync');
     })

@@ -8,7 +8,6 @@ const genHash = (pass) => {
 }
 
 exports.create = (req, res) => {
-    console.log(req.body)
     if(!req.body.email) {
         res.status(400).send({
             message: 'Email can not be empty'
@@ -64,21 +63,12 @@ exports.findOne = (req, res) => {
 }
 
 exports.update = (req, res) => {
-    const id = req.body.id;
+    const id = req.params.id;
     Users.update(req.body, {
         where: { id: id }
     })
-    .then(num => {
-        if(num === 1) {
-            res.send({
-                message: 'Update successfully'
-            });
-        }
-        else {
-            res.send({
-                message: 'Can`t update'
-            })
-        }
+    .then(data => {
+        res.send(`${data} id success changed`);
     })
     .catch(e => {
         res.status(500).send({
